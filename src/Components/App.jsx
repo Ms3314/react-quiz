@@ -8,6 +8,8 @@ import Header from './Header';
 import Loader from './Loader';
 import Start from './Start.jsx';
 import Questions from './Questions.jsx'
+import ProgressBar from './ProgressBar.jsx';
+
 
 const initialState = {
   questions : [] ,
@@ -27,7 +29,11 @@ function reducer (state , action) {
     case "dataFailed" :
       return {...state , status : "error"};
     case "start" :
-      return {...state , status : "active"}
+      return {...state , status : "active"};
+    case "nextQuestion" :
+      return {...state , index : state.index + 1 , answer : null} ;
+    case "resetGame" :
+      return {...state , index : 0 , answer : null , points : 0};
     case "newAnswer" : 
       const question = state.questions.at(state.index)
       return {
@@ -52,6 +58,8 @@ function App() {
   const [{questions , status , index , answer , points} , dispatch ] = useReducer(reducer , initialState)
   const noOfQns= questions.length
   // console.log(questions)
+  const numQuestions = questions.length
+  const maxPossiblePoints = questions.reduce((acc , question) => acc + question.points , 0)
   return (
     <div className='app'>
       <Header />
@@ -59,8 +67,12 @@ function App() {
         <h1>{status === 'loading' && <Loader/> }</h1>
         {status === 'error' && <Error/> }
         {status === 'ready' && <Start noOfQns={noOfQns} dispatch={dispatch}/>}
-        {status === "active" && <Questions points={points} dispatch={dispatch} answer={answer} question = {questions[index]} />}
-        {/* <p>Questions</p> */}
+        {status === "active" &&
+        <>
+         <ProgressBar points={points} index={index} numQuestions={numQuestions} maxPossiblePoints={maxPossiblePoints}/>
+         <Questions numQuestions={numQuestions} index={index} points={points} dispatch={dispatch} answer={answer} question = {questions[index]} />
+        </>
+        }
       </Main>
 
     </div>
