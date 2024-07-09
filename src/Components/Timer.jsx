@@ -8,6 +8,7 @@ function Timer({dispatch , secondsRemaining}) {
             dispatch({type
                  : "tick"})
         }, 1000);
+        // a random comment to continue my streak being very very stupid here 
 
         return () => {
             clearInterval(id)
